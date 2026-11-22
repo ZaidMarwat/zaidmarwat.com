@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Zaid Marwat builds and repairs the layer other people stand on: automation at Texas Instruments, test infrastructure at Visa, a container-ancestry fix in Podman, and a patent for a real-time thermal detection system.">
+<meta name="author" content="Zaid Marwat">
+<meta name="theme-color" content="#fbf1c7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#282828" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://zaidmarwat.com/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%A7%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zaid Marwat">
+<meta property="og:title" content="Zaid Marwat">
+<meta property="og:description" content="Zaid Marwat builds and repairs the layer other people stand on: automation at Texas Instruments, test infrastructure at Visa, a container-ancestry fix in Podman, and a patent for a real-time thermal detection system.">
+<meta property="og:url" content="https://zaidmarwat.com/">
+<meta property="og:image" content="https://zaidmarwat.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zaid Marwat">
+<meta name="twitter:description" content="Zaid Marwat builds and repairs the layer other people stand on: automation at Texas Instruments, test infrastructure at Visa, a container-ancestry fix in Podman, and a patent for a real-time thermal detection system.">
+<meta name="twitter:image" content="https://zaidmarwat.com/og-image.png">
+<title>Zaid Marwat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+/* ---------- tokens: gruvbox light is the base ---------- */
+:root {
+  --bg:        #fbf1c7;
+  --bg-soft:   #f2e5bc;
+  --bg-term:   #f9f5d7;
+  --ink:       #3c3836;
+  --ink-soft:  #504945;
+  --muted:     #7c6f64;
+  --line:      #e0d3ac;
+  --accent:    #af3a03;
+  --accent-2:  #427b58;
+  --accent-3:  #076678;
+  --plum:      #8f3f71;
+  --shadow:    0 1px 2px rgba(60,56,54,.07), 0 8px 28px -12px rgba(60,56,54,.22);
+  --term-shadow: 0 2px 4px rgba(60,56,54,.08), 0 24px 60px -28px rgba(60,56,54,.45);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:       #282828;
+    --bg-soft:  #32302f;
+    --bg-term:  #1d2021;
+    --ink:      #ebdbb2;
+    --ink-soft: #d5c4a1;
+    --muted:    #a89984;
+    --line:     #3c3836;
+    --accent:   #fe8019;
+    --accent-2: #8ec07c;
+    --accent-3: #83a598;
+    --plum:     #d3869b;
+    --shadow:   0 1px 2px rgba(0,0,0,.4), 0 8px 28px -12px rgba(0,0,0,.6);
+    --term-shadow: 0 2px 4px rgba(0,0,0,.4), 0 24px 60px -28px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:       #282828;
+  --bg-soft:  #32302f;
+  --bg-term:  #1d2021;
+  --ink:      #ebdbb2;
+  --ink-soft: #d5c4a1;
+  --muted:    #a89984;
+  --line:     #3c3836;
+  --accent:   #fe8019;
+  --accent-2: #8ec07c;
+  --accent-3: #83a598;
+  --plum:     #d3869b;
+  --shadow:   0 1px 2px rgba(0,0,0,.4), 0 8px 28px -12px rgba(0,0,0,.6);
+  --term-shadow: 0 2px 4px rgba(0,0,0,.4), 0 24px 60px -28px rgba(0,0,0,.9);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 74ch; margin: 0 auto; padding: 0 24px; }
+.wide { max-width: 88ch; }
+
+/* ---------- masthead ---------- */
+header.masthead { padding: 72px 0 34px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12.5px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 14px;
+}
+h1 {
+  font-family: Fraunces, Georgia, serif;
+  font-size: clamp(2.9rem, 8vw, 4.4rem);
+  font-weight: 600; line-height: .98; letter-spacing: -.022em;
+  margin: 0 0 18px; text-wrap: balance;
+}
+.standfirst {
+  font-size: 1.16rem; color: var(--ink-soft); max-width: 56ch;
+  margin: 0 0 26px; text-wrap: pretty;
+}
+.standfirst b { color: var(--ink); font-weight: 600; }
+
+.meta { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center;
+        font-family: "IBM Plex Mono", monospace; font-size: 13.5px; color: var(--muted); }
+.meta a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.meta a:hover { color: var(--ink); }
+
+/* ---------- terminal ---------- */
+.term-shell { padding: 8px 0 20px; }
+.term {
+  background: var(--bg-term);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: var(--term-shadow);
+  overflow: hidden;
+}
+.term-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+}
+.dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+.dot.r { background: #cc241d; } .dot.y { background: #d79921; } .dot.g { background: #98971a; }
+.term-title {
+  margin-left: 6px; font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px; color: var(--muted);
+}
+.term-hint { margin-left: auto; font-family: "IBM Plex Mono", monospace;
+             font-size: 11.5px; color: var(--muted); }
+
+.term-body {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 13.5px; line-height: 1.62;
+  padding: 16px 18px 18px;
+  height: 430px; overflow-y: auto;
+  cursor: text;
+  color: var(--ink);
+}
+.term-body::-webkit-scrollbar { width: 9px; }
+.term-body::-webkit-scrollbar-thumb { background: var(--line); border-radius: 5px; }
+
+.line { white-space: pre-wrap; word-break: break-word; }
+.ps1 { color: var(--accent-2); }
+.ps1 .path { color: var(--accent-3); }
+.cmd-echo { color: var(--ink); }
+.c-accent { color: var(--accent); }
+.c-key   { color: var(--accent-3); }
+.c-ok    { color: var(--accent-2); }
+.c-mute  { color: var(--muted); }
+.c-plum  { color: var(--plum); }
+.c-b     { font-weight: 600; }
+
+/* the prompt and the input must share one line box, or typed text sits off
+   from where it lands after Enter. no padding tricks: the gap is a real space. */
+.input-row { display: flex; align-items: flex-start; }
+.input-row .ps1 { white-space: pre; flex: none; }
+.field { position: relative; flex: 1 1 auto; min-width: 0; }
+.ghost {
+  position: absolute; left: 0; top: 0; white-space: pre; pointer-events: none;
+  color: var(--muted); font: inherit; line-height: inherit; user-select: none;
+}
+.ghost i { color: transparent; font-style: normal; }
+#cmdline {
+  display: block; width: 100%;
+  margin: 0; padding: 0; border: 0; outline: 0;
+  background: transparent;
+  font-family: inherit; font-size: inherit; font-weight: inherit; line-height: inherit;
+  color: var(--ink); caret-color: var(--accent);
+  -webkit-appearance: none; appearance: none; border-radius: 0;
+}
+.term-body:focus-within .cursor { animation: blink 1.1s steps(1) infinite; }
+.cursor { color: var(--accent); }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* keyboard focus visibility */
+.term:focus-within { border-color: var(--accent); }
+a:focus-visible, button:focus-visible, .key:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px;
+}
+
+/* ---------- prose sections ---------- */
+main { padding-bottom: 40px; }
+section { padding: 46px 0 8px; }
+.sec-label {
+  font-family: "IBM Plex Mono", monospace; font-size: 12.5px;
+  color: var(--muted); margin: 0 0 10px;
+}
+.sec-label .p { color: var(--accent-2); }
+h2 {
+  font-family: Fraunces, Georgia, serif;
+  font-size: clamp(1.6rem, 3.6vw, 2.1rem); font-weight: 600;
+  letter-spacing: -.015em; line-height: 1.14;
+  margin: 0 0 16px; text-wrap: balance;
+}
+h3 {
+  font-family: "IBM Plex Sans", sans-serif; font-size: 1.02rem; font-weight: 600;
+  margin: 0 0 2px; letter-spacing: -.005em;
+}
+p { margin: 0 0 17px; text-wrap: pretty; }
+.lede { font-size: 1.07rem; }
+
+hr.rule { border: 0; border-top: 1px solid var(--line); margin: 42px 0 0; }
+
+/* entries */
+.entry { padding: 20px 0; border-top: 1px solid var(--line); }
+.entry:first-of-type { border-top: 0; }
+.entry-head { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; margin-bottom: 9px; }
+.when {
+  margin-left: auto; font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px; color: var(--muted); white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.role { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--accent); }
+.entry ul { margin: 0; padding-left: 18px; }
+.entry li { margin: 0 0 6px; }
+.entry li::marker { color: var(--muted); }
+
+.stack {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; padding: 0; list-style: none;
+}
+.stack li {
+  font-family: "IBM Plex Mono", monospace; font-size: 11.5px;
+  color: var(--ink-soft); background: var(--bg-soft);
+  border: 1px solid var(--line); border-radius: 4px; padding: 2px 7px;
+}
+
+.callout {
+  border-left: 2px solid var(--accent); padding: 2px 0 2px 18px;
+  color: var(--ink-soft); margin: 0 0 17px;
+}
+
+/* skills grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px 30px; }
+.grid h3 { font-family: "IBM Plex Mono", monospace; font-size: 12px;
+           letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 6px; }
+.grid p { font-size: .95rem; margin: 0; color: var(--ink-soft); }
+
+/* piano */
+.piano { display: flex; gap: 3px; margin: 4px 0 16px; flex-wrap: wrap; }
+.key {
+  width: 40px; height: 96px; border: 1px solid var(--line); border-radius: 0 0 5px 5px;
+  background: var(--bg-term); color: var(--muted); cursor: pointer;
+  font-family: "IBM Plex Mono", monospace;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  gap: 5px; padding-bottom: 8px;
+  transition: background .09s ease, color .09s ease, transform .09s ease;
+}
+.key .note { font-size: 12px; }
+.key .hint {
+  font-size: 9px; line-height: 1.5; padding: 0 4px; border: 1px solid currentColor;
+  border-radius: 3px; opacity: .55;
+}
+.key:hover { background: var(--bg-soft); }
+.key.on { background: var(--accent); color: var(--bg); transform: translateY(2px); }
+
+footer { border-top: 1px solid var(--line); padding: 30px 0 60px; color: var(--muted);
+         font-family: "IBM Plex Mono", monospace; font-size: 13px; }
+footer a { color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  header.masthead { padding: 46px 0 26px; }
+  .term-body { height: 340px; font-size: 12.5px; }
+  .when { margin-left: 0; }
+  .key { width: 34px; height: 80px; }
+}
+</style>
+<style>
+.theme-toggle {
+  position: fixed; top: 16px; right: 16px; z-index: 20;
+  width: 38px; height: 38px; display: grid; place-items: center;
+  background: var(--bg-soft); color: var(--ink-soft);
+  border: 1px solid var(--line); border-radius: 8px; cursor: pointer;
+  font-family: "IBM Plex Mono", monospace; font-size: 15px; line-height: 1;
+  transition: color .12s ease, border-color .12s ease;
+}
+.theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+@media (max-width: 640px) { .theme-toggle { top: 10px; right: 10px; } }
+@media print { .theme-toggle { display: none; } }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" type="button"
+        aria-label="Switch between light and dark" title="Switch theme">◐</button>
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("themeToggle");
+  var saved = null;
+  try { saved = localStorage.getItem("theme"); } catch (e) {}
+  if (saved === "dark" || saved === "light") root.setAttribute("data-theme", saved);
+  btn.addEventListener("click", function () {
+    var dark = getComputedStyle(root).getPropertyValue("--bg").trim().indexOf("#28") === 0;
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+  });
+})();
+</script>
+
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Austin, TX &nbsp;·&nbsp; CS @ UT Austin &nbsp;·&nbsp; May 2027</p>
+    <h1>Zaid Marwat</h1>
+    <p class="standfirst">
+      I build and repair <b>the layer other people stand on</b>. Automation at Texas Instruments,
+      test infrastructure at Visa, a container-ancestry bug in Podman, and a patent for a
+      real-time thermal detection system.
+    </p>
+    <div class="meta">
+      <a href="mailto:zaidratify123@gmail.com">zaidratify123@gmail.com</a>
+      <span class="c-mute">US Patent US20240085134A1</span>
+    </div>
+  </div>
+</header>
+
+<div class="term-shell">
+  <div class="wrap wide">
+    <div class="term" id="term">
+      <div class="term-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="term-title">zaid@utaustin: ~</span>
+        <span class="term-hint">type <b>help</b> &nbsp;·&nbsp; ↑↓ history &nbsp;·&nbsp; tab completes</span>
+      </div>
+      <div class="term-body" id="out" tabindex="0" role="log" aria-label="Interactive shell. Type help for commands.">
+        <div id="scroll"></div>
+        <div class="input-row line" id="row" hidden><span class="ps1">zaid@utaustin<span class="c-mute">:</span><span class="path">~</span><span class="c-mute">$</span>&nbsp;</span><span class="field"><span class="ghost" id="ghost" aria-hidden="true"></span><input id="cmdline" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Shell input. Press Tab to complete."></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+<div class="wrap">
+
+<section>
+  <p class="sec-label"><span class="p">$</span> cat why-i-build.md</p>
+  <h2>It started with a variable called <code>$L</code></h2>
+  <p class="lede">
+    The first program I wrote saved the output of whatever I had just typed in the terminal
+    into a variable called <code>$L</code>, so I could hand it straight to the next command.
+    It was not elegant. It taught me what environment variables actually were, and it started
+    a habit I have not broken since: when a system makes me do something tedious twice, I go
+    build the thing that does it for me.
+  </p>
+  <p>
+    Linux pulled me in from there, then networking, then CTFs. Everything I have worked on
+    since is a larger version of that same script. A shell language extended in C so other
+    engineers could drive simulations. Automation that absorbed most of a fab's workflows.
+    A test hub with the schema and indexing decisions underneath it. An ancestry bug in an
+    open-source container engine.
+  </p>
+  <p class="callout">
+    Different scales, same instinct: make the layer underneath more trustworthy so the people
+    standing on it can move faster.
+  </p>
+</section>
+
+<hr class="rule">
+
+<section>
+  <p class="sec-label"><span class="p">$</span> ls experience/</p>
+  <h2>Where I have done it</h2>
+
+  <div class="entry">
+    <div class="entry-head">
+      <h3>Visa</h3><span class="role">Software Engineer Intern</span>
+      <span class="when">May – Aug 2026</span>
+    </div>
+    <ul>
+      <li>Built backend services and automation tooling over high-volume financial transaction data in live payment systems.</li>
+      <li>Designed and built the internal test hub, owning the architecture decisions including database schema and which tables to index.</li>
+      <li>Shipped dashboards and logging pipelines for production observability, and carried on-call for what they surfaced.</li>
+      <li>Deployed ML-assisted transaction checking, plus an AI MCP server integration.</li>
+    </ul>
+    <ul class="stack"><li>Python</li><li>SQL</li><li>Docker</li><li>Kubernetes</li><li>pandas</li><li>MCP</li></ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head">
+      <h3>Texas Instruments</h3><span class="role">Software Engineer Intern</span>
+      <span class="when">May – Aug 2025</span>
+    </div>
+    <ul>
+      <li>Automated 85&ndash;90% of the fab simulation workflows, cutting manual effort 10x.</li>
+      <li>Extended the internal shell scripting language, written in C, that drives the simulation tooling.</li>
+      <li>Error handling and job recovery that saved 150+ machine hours a quarter and $100K+ a year.</li>
+      <li>Built completion-monitoring services, carried on-call for job failures, and wrote the docs other engineers used to extend it all.</li>
+    </ul>
+    <ul class="stack"><li>C</li><li>Python</li><li>Bash</li><li>Linux</li><li>Ansible</li><li>GitLab CI</li></ul>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <p class="sec-label"><span class="p">$</span> ls projects/</p>
+  <h2>Things I built because I wanted to</h2>
+
+  <div class="entry">
+    <div class="entry-head">
+      <h3>Brain-Computer Interface Wheelchair</h3>
+      <span class="when">published &nbsp;·&nbsp; CBS</span>
+    </div>
+    <p style="margin-bottom:10px">
+      A close friend's grandfather was losing the ability to walk, so a few of us built a BCI
+      wheelchair prototype in his honor. A real-time EEG pipeline in C++ and Python on a
+      Raspberry Pi, turning noisy signals into movement, with ML classification tuned for
+      real-world noise. Presented at the Advancing Healthcare Innovation Summit, featured on
+      CBS, and published in the <em>Journal of Innovation in Digital Health, Diagnostics, and
+      Biomarkers</em>.
+    </p>
+    <p style="margin-bottom:0" class="c-mute" >
+      It is the project I am proudest of, because it started with somebody specific rather
+      than with a spec.
+    </p>
+    <ul class="stack"><li>C++</li><li>Python</li><li>Raspberry Pi</li><li>NumPy</li><li>SciPy</li><li>OpenBCI</li></ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head">
+      <h3>Thermal-Imaging Friendly-Fire Avoidance System</h3>
+      <span class="when">US20240085134A1</span>
+    </div>
+    <p style="margin-bottom:0">
+      A patented real-time system that detects human silhouettes in live infrared camera feeds.
+      The hard part was never detection; it was detection fast enough to matter, since in a
+      safety system a correct answer that arrives late is worse than useless. I profiled the
+      pipeline end to end and optimized the hot path.
+    </p>
+    <ul class="stack"><li>Python</li><li>OpenCV</li><li>Embedded Linux</li></ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head">
+      <h3>Podman</h3><span class="role">open-source contributor</span>
+      <span class="when">container ancestry</span>
+    </div>
+    <p style="margin-bottom:0">
+      Fixed a bug in Podman's container ancestry logic, where a container reported the wrong
+      ancestor image under certain conditions. It is also where my love of nvim started:
+      jumping to the definition of a type and landing exactly where you meant to is a small
+      thing that never stopped being satisfying.
+    </p>
+    <ul class="stack"><li>Go</li><li>containers</li><li>nvim</li></ul>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head">
+      <h3>Preference-Based News App</h3><span class="role">team lead</span>
+      <span class="when">Texas Convergent</span>
+    </div>
+    <p style="margin-bottom:0">
+      Led a student engineering team building a short-form news app with a personalized feed
+      driven by the topics each reader picks.
+    </p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <p class="sec-label"><span class="p">$</span> cat stack.txt</p>
+  <h2>What I reach for</h2>
+  <div class="grid">
+    <div>
+      <h3>Languages</h3>
+      <p>Python, C, C++, Go, Java, SQL, Bash. C and Python are where I am most at home.</p>
+    </div>
+    <div>
+      <h3>Systems</h3>
+      <p>Linux, virtualization, distributed systems, containers, networking, concurrency.</p>
+    </div>
+    <div>
+      <h3>Infrastructure</h3>
+      <p>Docker, Kubernetes, Ansible, GitLab CI, Jenkins, AWS, Git.</p>
+    </div>
+    <div>
+      <h3>Practice</h3>
+      <p>Profiling, debugging, on-call, technical writing, schema and indexing design.</p>
+    </div>
+    <div>
+      <h3>Coursework</h3>
+      <p>Operating Systems, Computer Architecture, Networks, Probability &amp; Statistics, Linear Algebra, HPC, Virtualization, Neural Networks.</p>
+    </div>
+    <div>
+      <h3>Editor</h3>
+      <p>nvim, enthusiastically, with more plugins than is strictly defensible.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <p class="sec-label"><span class="p">$</span> cat off-the-clock.md</p>
+  <h2>Away from a terminal</h2>
+
+  <p>
+    <b>Piano.</b> I taught myself during my first year of college from those YouTube videos
+    with the falling notes, practicing late at night in an empty dorm piano room so I would not
+    bother anyone. Mostly anime soundtracks, <em>Violet Evergarden</em> and
+    <em>Your Lie in April</em>. <em>Hikaru Nara</em> took me the longest and is still my
+    favorite thing to play.
+  </p>
+
+  <div class="piano" id="piano" role="group" aria-label="Playable keyboard"></div>
+
+  <p>
+    <b>Fragrance.</b> I am an officer of my university's fragrance club, which sounds like a
+    non sequitur until you notice that a scent is a system too. There is an enormous amount of
+    intricacy behind the formation of a single one, and what a person reaches for is quietly
+    shaped by everyone around them. Preferences are inherited from a circle before they are
+    ever chosen. You can learn a startling amount about somebody's world from what they wear.
+  </p>
+
+  <p style="margin-bottom:0">
+    <b>Fantasy.</b> Deep in Brandon Sanderson's <em>Stormlight Archive</em>. Rule-bound magic
+    systems that hold together under pressure are, I suspect, the same thing I like about
+    operating systems.
+  </p>
+</section>
+
+<hr class="rule">
+
+<section>
+  <p class="sec-label"><span class="p">$</span> cat contact.txt</p>
+  <h2>Get in touch</h2>
+  <p class="lede" style="margin-bottom:12px">
+    I am looking for work in virtualization, distributed systems, and infrastructure. Anything
+    that keeps me close to Linux and a terminal.
+  </p>
+  <div class="meta">
+    <a href="mailto:zaidratify123@gmail.com">zaidratify123@gmail.com</a>
+    <span>Dallas / Austin, TX</span>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    Built with too much affection for the terminal. Try <b>neofetch</b>, or <b>echo hello</b> then <b>$L</b>.
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var scroll = document.getElementById("scroll");
+  var row    = document.getElementById("row");
+  var input  = document.getElementById("cmdline");
+  var ghost  = document.getElementById("ghost");
+  var body   = document.getElementById("out");
+
+  // one prompt string, used by the input row, the echo, and the boot line,
+  // so all three land on exactly the same column.
+  var PROMPT = '<span class="ps1">zaid@utaustin<span class="c-mute">:</span>' +
+               '<span class="path">~</span><span class="c-mute">$</span>&nbsp;</span>';
+
+  var lastOut = "";          // the famous $L
+  var history = [];
+  var hIdx    = -1;
+
+  function el(cls, html) {
+    var d = document.createElement("div");
+    d.className = "line" + (cls ? " " + cls : "");
+    d.innerHTML = html;
+    return d;
+  }
+  function print(html, cls) {
+    scroll.appendChild(el(cls, html === "" ? "&nbsp;" : html));
+    body.scrollTop = body.scrollHeight;
+  }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function plain(html) {
+    var d = document.createElement("div"); d.innerHTML = html;
+    return (d.textContent || "").trim();
+  }
+
+  var FILES = {
+    "why-i-build.md":
+      "The first program I wrote saved the output of the last command into $L so I could\n" +
+      "hand it to the next one. Everything since has been a larger version of that script.",
+    "contact.txt":
+      "email  zaidratify123@gmail.com\nwhere  Dallas / Austin, TX",
+    "patent.txt":
+      "US20240085134A1 - Thermal-Imaging Friendly-Fire Avoidance System.\n" +
+      "Real-time detection of human silhouettes in live infrared feeds.",
+    "stack.txt":
+      "languages  Python, C, C++, Go, Java, SQL, Bash\n" +
+      "systems    Linux, virtualization, distributed systems, containers\n" +
+      "infra      Docker, Kubernetes, Ansible, GitLab CI, Jenkins, AWS\n" +
+      "editor     nvim"
+  };
+
+  var CMDS = {};
+
+  function def(name, help, fn) { CMDS[name] = { help: help, run: fn }; }
+
+  def("help", "this list", function () {
+    print("");
+    print("<span class='c-accent c-b'>Commands</span>");
+    var names = Object.keys(CMDS).sort();
+    names.forEach(function (n) {
+      print("  <span class='c-key'>" + n.padEnd(12) + "</span><span class='c-mute'>" + CMDS[n].help + "</span>");
+    });
+    print("");
+    print("<span class='c-mute'>The shell keeps the last output in </span><span class='c-accent'>$L</span>" +
+          "<span class='c-mute'>, which is the first program I ever wrote.</span>");
+    print("<span class='c-mute'>Try: </span><span class='c-key'>echo hello</span>" +
+          "<span class='c-mute'> then </span><span class='c-key'>$L</span>");
+    print("");
+    print("<span class='c-mute'>Tab completes, and grows to the shared prefix when several match.</span>");
+    print("<span class='c-mute'>Right arrow accepts the grey suggestion. Ctrl+L clears, Ctrl+U wipes the line.</span>");
+    print("");
+  });
+
+  def("whoami", "the short version", function () {
+    print("");
+    print("<span class='c-accent c-b'>Zaid Marwat</span> <span class='c-mute'>- CS @ UT Austin, May 2027</span>");
+    print("");
+    print("I build and repair the layer other people stand on. Automation at Texas");
+    print("Instruments, test infrastructure at Visa, a container-ancestry fix in Podman,");
+    print("and a patent for a real-time thermal detection system.");
+    print("");
+    print("<span class='c-mute'>Looking for: virtualization, distributed systems, infrastructure.</span>");
+    print("");
+  });
+
+  def("neofetch", "system info", function () {
+    var art = [
+      "        .--.       ",
+      "       |o_o |      ",
+      "       |:_/ |      ",
+      "      //   \\ \\     ",
+      "     (|     | )    ",
+      "    /'\\_   _/`\\    ",
+      "    \\___)=(___/    "
+    ];
+    var info = [
+      ["", "<span class='c-accent c-b'>zaid</span><span class='c-mute'>@</span><span class='c-accent c-b'>utaustin</span>"],
+      ["", "<span class='c-mute'>-----------------</span>"],
+      ["Host", "The University of Texas at Austin"],
+      ["Kernel", "Computer Science BS, GPA 3.86"],
+      ["Uptime", "graduating May 2027"],
+      ["Shell", "bash, zsh"],
+      ["Editor", "nvim (btw)"],
+      ["Langs", "Python, C, C++, Go, Java, SQL"],
+      ["Focus", "virtualization, distributed systems"],
+      ["Patent", "US20240085134A1"],
+      ["Playing", "Hikaru Nara"]
+    ];
+    print("");
+    var rows = Math.max(art.length, info.length);
+    for (var i = 0; i < rows; i++) {
+      var a = art[i] !== undefined ? art[i] : "                   ";
+      var r = "";
+      if (info[i]) {
+        r = info[i][0]
+          ? "<span class='c-key'>" + info[i][0].padEnd(8) + "</span>" + esc(info[i][1])
+          : info[i][1];
+      }
+      print("<span class='c-accent'>" + esc(a) + "</span>" + r);
+    }
+    print("");
+  });
+
+  def("experience", "where I have worked", function () {
+    print("");
+    print("<span class='c-accent c-b'>Visa</span> <span class='c-mute'>- Software Engineer Intern, May-Aug 2026</span>");
+    print("  Test hub architecture: schema and indexing decisions.");
+    print("  Backend services over high-volume transaction data in live payment systems.");
+    print("  Dashboards, logging pipelines, on-call.");
+    print("  ML-assisted transaction checking, AI MCP server integration.");
+    print("");
+    print("<span class='c-accent c-b'>Texas Instruments</span> <span class='c-mute'>- Software Engineer Intern, May-Aug 2025</span>");
+    print("  Automated 85-90% of fab simulation workflows, 10x less manual effort.");
+    print("  Extended the internal shell language, written in C, that drives the tooling.");
+    print("  Error handling and job recovery: 150+ machine hours/quarter, $100K+/year.");
+    print("  Completion-monitoring services, on-call, and the docs others built on.");
+    print("");
+  });
+
+  def("projects", "things I built", function () {
+    print("");
+    [["bci-wheelchair", "real-time EEG to movement. C++/Python on a Pi. Published, CBS."],
+     ["thermal-patent", "US20240085134A1. Silhouette detection in live infrared."],
+     ["podman", "fixed the container ancestry bug. My nvim origin story."],
+     ["news-app", "team lead. Short-form feed driven by reader-picked topics."]
+    ].forEach(function (p) {
+      print("<span class='c-key'>" + p[0].padEnd(18) + "</span>" + esc(p[1]));
+    });
+    print("");
+    print("<span class='c-mute'>Try </span><span class='c-key'>bci</span>" +
+          "<span class='c-mute'> or </span><span class='c-key'>podman</span>" +
+          "<span class='c-mute'> for the story.</span>");
+    print("");
+  });
+
+  def("bci", "the wheelchair story", function () {
+    print("");
+    print("<span class='c-accent c-b'>Brain-Computer Interface Wheelchair</span>");
+    print("");
+    print("A close friend's grandfather was losing the ability to walk. So a few of us");
+    print("built a BCI wheelchair prototype in his honor: a real-time EEG pipeline in");
+    print("C++ and Python on a Raspberry Pi, turning noisy signals into movement.");
+    print("");
+    print("Presented at the Advancing Healthcare Innovation Summit, featured on CBS,");
+    print("published in the Journal of Innovation in Digital Health.");
+    print("");
+    print("<span class='c-mute'>It is the one I am proudest of, because it started with somebody");
+    print("specific rather than with a spec.</span>");
+    print("");
+  });
+
+  def("podman", "the ancestry bug", function () {
+    print("");
+    print("<span class='c-accent c-b'>Podman</span> <span class='c-mute'>- open-source contributor</span>");
+    print("");
+    print("Fixed a bug in the container ancestry logic, where a container would report");
+    print("the wrong ancestor image when certain conditions were met.");
+    print("");
+    print("Also where my love of nvim started. Jumping to the definition of a type and");
+    print("landing exactly where you meant to is a small thing that never got old.");
+    print("");
+  });
+
+  def("piano", "what I play", function () {
+    print("");
+    print("<span class='c-accent c-b'>Self-taught, first year of college.</span>");
+    print("");
+    print("Learned from those YouTube videos with the falling notes, practicing late at");
+    print("night in an empty dorm piano room so I would not bother anyone.");
+    print("");
+    print("<span class='c-key'>repertoire  </span>Violet Evergarden, Your Lie in April");
+    print("<span class='c-key'>hardest     </span>Hikaru Nara. Also now my favorite.");
+    print("");
+    print("<span class='c-mute'>There is a playable keyboard further down the page.</span>");
+    print("");
+  });
+
+  def("scent", "why fragrance", function () {
+    print("");
+    print("<span class='c-accent c-b'>Officer, One Pulse fragrance club</span>");
+    print("");
+    print("There is an enormous amount of intricacy behind the formation of a single");
+    print("scent. And what a person reaches for is quietly shaped by everyone around");
+    print("them. Preferences get inherited from a circle before they are ever chosen.");
+    print("");
+    print("<span class='c-mute'>You can learn a startling amount about somebody's world from what");
+    print("they wear.</span>");
+    print("");
+  });
+
+  def("books", "currently reading", function () {
+    print("");
+    print("<span class='c-accent c-b'>The Stormlight Archive</span> <span class='c-mute'>- Brandon Sanderson</span>");
+    print("");
+    print("Rule-bound magic systems that hold together under pressure are, I suspect,");
+    print("the same thing I like about operating systems.");
+    print("");
+  });
+
+  def("skills", "what I reach for", function () {
+    print("");
+    [["languages", "Python, C, C++, Go, Java, SQL, Bash"],
+     ["systems", "Linux, virtualization, distributed systems, containers, networking"],
+     ["infra", "Docker, Kubernetes, Ansible, GitLab CI, Jenkins, AWS, Git"],
+     ["data", "MySQL, PostgreSQL, MongoDB, pandas, NumPy, SciPy"],
+     ["ml", "PyTorch, neural networks, LLM and MCP integration"],
+     ["practice", "profiling, debugging, on-call, technical writing"]
+    ].forEach(function (s) {
+      print("<span class='c-key'>" + s[0].padEnd(12) + "</span>" + esc(s[1]));
+    });
+    print("");
+  });
+
+  def("education", "school", function () {
+    print("");
+    print("<span class='c-accent c-b'>The University of Texas at Austin</span>");
+    print("Computer Science BS  <span class='c-mute'>|</span>  GPA 3.86  <span class='c-mute'>|</span>  May 2027");
+    print("");
+    print("<span class='c-key'>coursework  </span>Operating Systems, Computer Architecture, Networks,");
+    print("            Probability & Statistics, Linear Algebra, HPC,");
+    print("            Virtualization, Neural Networks");
+    print("<span class='c-key'>leading     </span>Texas Convergent team lead, One Pulse officer");
+    print("");
+  });
+
+  def("ls", "list files", function () {
+    print("");
+    print(Object.keys(FILES).map(function (f) {
+      return "<span class='c-key'>" + esc(f) + "</span>";
+    }).join("   "));
+    print("");
+  });
+
+  def("cat", "read a file", function (args) {
+    var f = args[0];
+    if (!f) { print("cat: which file? try <span class='c-key'>ls</span>"); return; }
+    if (!FILES[f]) { print("cat: " + esc(f) + ": no such file"); return; }
+    print("");
+    FILES[f].split("\n").forEach(function (l) { print(esc(l)); });
+    print("");
+  });
+
+  def("echo", "print something", function (args) { print(esc(args.join(" "))); });
+
+  def("contact", "how to reach me", function () {
+    print("");
+    print("<span class='c-key'>email  </span><a href='mailto:zaidratify123@gmail.com' class='c-accent'>zaidratify123@gmail.com</a>");
+    print("<span class='c-key'>where  </span>Dallas / Austin, TX");
+    print("");
+  });
+
+  def("history", "what you typed", function () {
+    print("");
+    if (!history.length) { print("<span class='c-mute'>nothing yet</span>"); print(""); return; }
+    history.forEach(function (h, i) {
+      print("<span class='c-mute'>" + String(i + 1).padStart(4) + "</span>  " + esc(h));
+    });
+    print("");
+  });
+
+  def("clear", "wipe the screen", function () { scroll.innerHTML = ""; });
+
+  def("sudo", "nice try", function () {
+    print("<span class='c-plum'>zaid is not in the sudoers file. This incident has been reported.</span>");
+  });
+
+  def("vim", "a difference of opinion", function () {
+    print("<span class='c-mute'>nvim, please.</span>");
+  });
+  CMDS.nvim = { help: "correct", run: function () {
+    print("<span class='c-ok'>Good choice. Ask me about my plugins sometime.</span>"); } };
+
+  def("exit", "you cannot leave", function () {
+    print("<span class='c-mute'>There is no exit. There is only the terminal.</span>");
+  });
+
+  // ---- interpreter -------------------------------------------------------
+  function run(raw) {
+    var text = raw.trim();
+    if (!text) return;
+
+    // $L expansion: the first program I ever wrote
+    if (/\$L\b/.test(text)) {
+      if (!lastOut) {
+        print("<span class='c-mute'>$L is empty. Run something first, then try again.</span>");
+        return;
+      }
+      text = text.replace(/\$L\b/g, lastOut);
+      print("<span class='c-mute'>$L -> </span>" + esc(text));
+    }
+
+    var parts = text.split(/\s+/);
+    var name  = parts[0].toLowerCase();
+    var args  = parts.slice(1);
+    var mark  = scroll.childElementCount;
+
+    if (CMDS[name]) {
+      CMDS[name].run(args);
+    } else {
+      print("<span class='c-mute'>" + esc(name) + ": command not found. Try </span>" +
+            "<span class='c-key'>help</span><span class='c-mute'>.</span>");
+    }
+
+    // capture this command's output into $L
+    var produced = [];
+    for (var i = mark; i < scroll.childElementCount; i++) {
+      var t = plain(scroll.children[i].innerHTML);
+      if (t) produced.push(t);
+    }
+    if (produced.length) lastOut = produced.join(" ").slice(0, 220);
+  }
+
+  function submit(text) {
+    print(PROMPT + "<span class='cmd-echo'>" + esc(text) + "</span>");
+    if (text.trim()) { history.push(text); hIdx = history.length; }
+    run(text);
+  }
+
+  // ---- completion ---------------------------------------------------------
+  // Works on the token under the cursor. First token completes command names;
+  // an argument to `cat` completes filenames. Matches shell behaviour: expand
+  // to the longest common prefix, and only list candidates when still ambiguous.
+  function ctxOf(value) {
+    var cut  = value.lastIndexOf(" ");
+    var head = cut === -1 ? "" : value.slice(0, cut + 1);
+    var tok  = cut === -1 ? value : value.slice(cut + 1);
+    var pool;
+    if (cut === -1) {
+      pool = Object.keys(CMDS);
+    } else {
+      var first = value.trim().split(/\s+/)[0].toLowerCase();
+      pool = first === "cat" ? Object.keys(FILES) : [];
+    }
+    var low  = tok.toLowerCase();
+    var hits = pool.filter(function (c) { return c.toLowerCase().indexOf(low) === 0; }).sort();
+    return { head: head, tok: tok, hits: hits };
+  }
+
+  function commonPrefix(list) {
+    if (!list.length) return "";
+    var p = list[0];
+    for (var i = 1; i < list.length; i++) {
+      while (p && list[i].toLowerCase().indexOf(p.toLowerCase()) !== 0) p = p.slice(0, -1);
+    }
+    return p;
+  }
+
+  // what Tab would add right now, or "" if nothing unambiguous
+  function pending() {
+    var c = ctxOf(input.value);
+    if (!c.tok || !c.hits.length) return "";
+    if (c.hits.length === 1) return c.hits[0].slice(c.tok.length);
+    var cp = commonPrefix(c.hits);
+    return cp.length > c.tok.length ? cp.slice(c.tok.length) : "";
+  }
+
+  function drawGhost() {
+    var rest = pending();
+    ghost.innerHTML = rest
+      ? "<i>" + esc(input.value) + "</i>" + esc(rest)
+      : "";
+  }
+
+  function columns(list) {
+    var w = 0;
+    list.forEach(function (s) { w = Math.max(w, s.length); });
+    w += 2;
+    var per = Math.max(1, Math.floor(66 / w));
+    for (var i = 0; i < list.length; i += per) {
+      print(list.slice(i, i + per).map(function (s) {
+        return "<span class='c-key'>" + esc(s.padEnd(w)) + "</span>";
+      }).join(""));
+    }
+  }
+
+  function complete() {
+    var c = ctxOf(input.value);
+    if (!c.hits.length) return;
+
+    if (c.hits.length === 1) {
+      input.value = c.head + c.hits[0] + " ";
+    } else {
+      var cp = commonPrefix(c.hits);
+      if (cp.length > c.tok.length) {
+        input.value = c.head + cp;          // grow to the shared prefix
+      } else {
+        print(PROMPT + "<span class='cmd-echo'>" + esc(input.value) + "</span>");
+        columns(c.hits);                    // still ambiguous: show the options
+      }
+    }
+    drawGhost();
+    body.scrollTop = body.scrollHeight;
+  }
+
+  input.addEventListener("input", drawGhost);
+
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      complete();
+      return;
+    }
+    if (e.key === "Enter") {
+      var v = input.value; input.value = ""; drawGhost(); submit(v);
+      return;
+    }
+    if (e.key === "ArrowRight" && input.selectionStart === input.value.length) {
+      var rest = pending();                 // accept the inline suggestion
+      if (rest) { e.preventDefault(); input.value += rest; drawGhost(); }
+      return;
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (hIdx > 0) { hIdx--; input.value = history[hIdx]; drawGhost(); }
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (hIdx < history.length - 1) { hIdx++; input.value = history[hIdx]; }
+      else { hIdx = history.length; input.value = ""; }
+      drawGhost();
+      return;
+    }
+    if (e.ctrlKey && (e.key === "l" || e.key === "L")) {
+      e.preventDefault(); scroll.innerHTML = "";
+      return;
+    }
+    if (e.ctrlKey && (e.key === "u" || e.key === "U")) {
+      e.preventDefault(); input.value = ""; drawGhost();
+    }
+  });
+
+  body.addEventListener("click", function (e) {
+    if (e.target.tagName !== "A") input.focus();
+  });
+
+  // ---- boot sequence -----------------------------------------------------
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var BOOT = "whoami";
+
+  function start() {
+    row.hidden = false;
+    input.focus({ preventScroll: true });
+  }
+
+  print("<span class='c-mute'>zaid-os 27.05 &nbsp; last login: today</span>");
+  print("<span class='c-mute'>type </span><span class='c-key'>help</span><span class='c-mute'> to see what is here</span>");
+
+  if (reduce) {
+    submit(BOOT); start();
+  } else {
+    var i = 0;
+    var pre = el("", PROMPT + "<span class='cmd-echo' id='typed'></span>" +
+                     "<span class='cursor'>&#9608;</span>");
+    scroll.appendChild(pre);
+    var typed = pre.querySelector("#typed");
+    var tick = setInterval(function () {
+      typed.textContent = BOOT.slice(0, ++i);
+      if (i >= BOOT.length) {
+        clearInterval(tick);
+        setTimeout(function () {
+          pre.innerHTML = PROMPT + "<span class='cmd-echo'>" + BOOT + "</span>";
+          history.push(BOOT); hIdx = history.length;
+          run(BOOT); start();
+        }, 260);
+      }
+    }, 62);
+  }
+
+  // ---- playable keyboard -------------------------------------------------
+  var NOTES = [
+    ["C", 261.63], ["D", 293.66], ["E", 329.63], ["F", 349.23],
+    ["G", 392.00], ["A", 440.00], ["B", 493.88], ["C", 523.25]
+  ];
+  var KEY_LABELS = ["a", "s", "d", "f", "j", "k", "l", ";"];
+  var KEY_MAP = { "a": 0, "s": 1, "d": 2, "f": 3, "j": 4, "k": 5, "l": 6, ";": 7 };
+  var keys = document.getElementById("piano");
+  var hits = [];
+  var actx = null;
+
+  function tone(freq) {
+    try {
+      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === "suspended") actx.resume();
+      var t = actx.currentTime;
+      var osc = actx.createOscillator();
+      var amp = actx.createGain();
+      osc.type = "triangle";
+      osc.frequency.value = freq;
+      amp.gain.setValueAtTime(0.0001, t);
+      amp.gain.exponentialRampToValueAtTime(0.22, t + 0.012);
+      amp.gain.exponentialRampToValueAtTime(0.0001, t + 1.5);
+      osc.connect(amp); amp.connect(actx.destination);
+      osc.start(t); osc.stop(t + 1.6);
+    } catch (err) { /* audio unavailable; keys still respond visually */ }
+  }
+
+  NOTES.forEach(function (n, i) {
+    var b = document.createElement("button");
+    b.className = "key"; b.type = "button";
+    b.innerHTML = '<span class="note">' + n[0] + '</span>'
+      + '<span class="hint">' + KEY_LABELS[i] + '</span>';
+    b.setAttribute("aria-label", "Play " + n[0] + " (or press " + KEY_LABELS[i] + ")");
+    function hit() {
+      tone(n[1]);
+      b.classList.add("on");
+      setTimeout(function () { b.classList.remove("on"); }, 130);
+    }
+    b.addEventListener("click", hit);
+    hits[i] = hit;
+    keys.appendChild(b);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+    var el = document.activeElement;
+    if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+    var idx = KEY_MAP[e.key.toLowerCase()];
+    if (idx === undefined) return;
+    hits[idx]();
+  });
+})();
+</script>
+
+</body>
+</html>

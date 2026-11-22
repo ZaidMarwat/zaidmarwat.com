@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#282828"/>
+      <stop offset="1" stop-color="#1d2021"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- terminal window -->
+  <rect x="80" y="86" width="1040" height="458" rx="12" fill="#1d2021" stroke="#3c3836" stroke-width="1.5"/>
+
+  <!-- title bar -->
+  <rect x="80" y="86" width="1040" height="46" rx="12" fill="#32302f"/>
+  <rect x="80" y="118" width="1040" height="14" fill="#32302f"/>
+  <circle cx="112" cy="109" r="7" fill="#fb4934"/>
+  <circle cx="136" cy="109" r="7" fill="#fabd2f"/>
+  <circle cx="160" cy="109" r="7" fill="#b8bb26"/>
+  <text x="600" y="114" text-anchor="middle" font-family="Menlo, Monaco, ui-monospace, monospace" font-size="14" fill="#a89984">zsh — zaidmarwat.com</text>
+
+  <!-- terminal body -->
+  <g font-family="Menlo, Monaco, ui-monospace, monospace">
+    <text x="118" y="196" font-size="21" fill="#83a598">$ <tspan fill="#a89984">whoami</tspan></text>
+    <text x="118" y="256" font-size="52" font-weight="700" fill="#ebdbb2">Zaid Marwat</text>
+
+    <text x="118" y="322" font-size="21" fill="#83a598">$ <tspan fill="#a89984">cat</tspan><tspan fill="#d5c4a1"> role.txt</tspan></text>
+    <text x="118" y="360" font-size="24" fill="#d5c4a1">Software Engineer · UT Austin '27</text>
+
+    <text x="118" y="418" font-size="21" fill="#83a598">$ <tspan fill="#a89984">cat</tspan><tspan fill="#d5c4a1"> highlights.txt</tspan></text>
+    <text x="118" y="456" font-size="21" fill="#a89984">Visa · Texas Instruments · U.S. Patent Holder</text>
+
+    <text x="118" y="500" font-size="21" fill="#83a598">$ <tspan fill="#fe8019">_</tspan></text>
+  </g>
+
+  <text x="1080" y="580" text-anchor="end" font-family="Menlo, Monaco, ui-monospace, monospace" font-size="17" fill="#fe8019">zaidmarwat.com</text>
+</svg>

@@ -9,19 +9,34 @@ Personal site. One source file, two outputs.
 ## Change something
 
     python3 build.py
-    npx wrangler pages deploy public --project-name=zaidmarwat
+    git add -A
+    git commit -m "Describe the change"
+    git push
+
+Pushing to `main` deploys automatically. Cloudflare Pages (project
+`zaidmarwat-com`) is connected to this GitHub repo and runs `python3 build.py`
+on every push, then serves `public/`. Build logs are in the Cloudflare
+dashboard: Workers & Pages, zaidmarwat-com, Deployments.
+
+Running `build.py` locally before committing keeps `public/` in the repo in
+sync with the source, and lets you preview `public/index.html` in a browser.
+
+Pushing to any other branch makes a preview deployment at
+`<branch>.zaidmarwat-com.pages.dev` without touching the live site.
 
 `src/page.html` is also the Claude Artifact source, which is why it has no
 doctype or `<head>` of its own. The artifact host supplies those; `build.py`
 supplies them for the real site.
 
-## First-time setup
+## Hosting
 
-    npx wrangler login          # opens a browser, one time only
+- Repo: github.com/ZaidMarwat/zaidmarwat.com
+- Cloudflare Pages project: `zaidmarwat-com` (zaidmarwat-com.pages.dev)
+- Custom domain: zaidmarwat.com, a proxied CNAME to zaidmarwat-com.pages.dev
+  in the zaidmarwat.com zone on the same Cloudflare account.
 
-## Attaching a custom domain later
+## Changing the domain
 
-1. Buy the domain (Cloudflare Registrar sells at cost).
-2. Cloudflare dashboard, Workers & Pages, zaidmarwat, Custom domains, Set up.
-3. Update `SITE` in build.py, plus public/robots.txt and public/sitemap.xml,
-   then rebuild and redeploy so the canonical and social tags match.
+1. Cloudflare dashboard, Workers & Pages, zaidmarwat-com, Custom domains, Set up.
+2. Update `SITE` in build.py, plus public/robots.txt and public/sitemap.xml,
+   then rebuild and push so the canonical and social tags match.

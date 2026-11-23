@@ -217,6 +217,9 @@ hr.rule { border: 0; border-top: 1px solid var(--line); margin: 42px 0 0; }
   color: var(--ink-soft); margin: 0 0 17px;
 }
 
+h3 a { color: inherit; text-decoration: none; }
+h3 a:hover { text-decoration: underline; }
+
 /* skills grid */
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px 30px; }
 .grid h3 { font-family: "IBM Plex Mono", monospace; font-size: 12px;
@@ -252,6 +255,9 @@ footer a { color: var(--accent); }
   body { font-size: 16px; }
   header.masthead { padding: 46px 0 26px; }
   .term-body { height: 340px; font-size: 12.5px; }
+  .term-bar { flex-wrap: wrap; }
+  .term-title { min-width: 0; overflow-wrap: anywhere; }
+  .term-hint { flex-basis: 100%; text-align: left; padding-left: 0; }
   .when { margin-left: 0; }
   .key { width: 34px; height: 80px; }
 }
@@ -263,12 +269,12 @@ footer a { color: var(--accent); }
     <h1>Zaid Marwat</h1>
     <p class="standfirst">
       I build and repair <b>the layer other people stand on</b>. Automation at Texas Instruments,
-      test infrastructure at Visa, a container-ancestry bug in Podman, and a patent for a
+      test infrastructure at Visa, a submitted container-ancestry fix for Podman, and co-invention of a patent for a
       real-time thermal detection system.
     </p>
     <div class="meta">
       <a href="mailto:zaidratify123@gmail.com">zaidratify123@gmail.com</a>
-      <span class="c-mute">US Patent US20240085134A1</span>
+      <span class="c-mute">Co-inventor, U.S. Patent 12,038,245</span>
     </div>
   </div>
 </header>
@@ -357,6 +363,28 @@ footer a { color: var(--accent); }
   <h2>Things I built because I wanted to</h2>
 
   <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/cpp-http-server">C++ HTTP server</a></h3><span class="role">Backend, networking and systems</span></div>
+    <p>My C++17 HTTP/1.1 server separates nonblocking socket I/O from request handling. A poll-based event loop keeps idle connections out of the worker pool; workers only run handlers. The incremental parser handles Content-Length and chunked request bodies, with framing checks, configurable limits and deadlines. The current suite passes 146 checks, including real sockets and concurrent keep-alive clients.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/lsmkv">lsmkv</a></h3><span class="role">Storage, databases and infrastructure</span></div>
+    <p>lsmkv is a C++17 embedded key-value store built around an LSM tree. It combines a checksummed write-ahead log, atomic write batches, a skiplist memtable, SSTables, background flush and leveled compaction. MVCC snapshots preserve a read view across compaction; Bloom filters and an LRU block cache reduce table work.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/minfer">minfer</a></h3><span class="role">AI infrastructure and model serving</span></div>
+    <p>minfer is a NumPy inference engine for a GPT-2-style model. The serving work is the focus: block-paged KV storage, iteration-level continuous batching, chunked prefill, recompute preemption and shared-prefix caching. It also exposes an OpenAI-style completions endpoint with SSE streaming and metrics.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/tracklet">tracklet</a></h3><span class="role">Tracking, autonomy and estimation</span></div>
+    <p>tracklet is a simulated 2D multi-target radar tracker in Python and NumPy. It combines constant-velocity and coordinated-turn EKFs in an interacting multiple-model filter, gates detections by Mahalanobis distance, and uses a custom Hungarian/JV solver for one-to-one association. M-of-N confirmation and miss-based deletion manage track lifetimes.</p>
+  </div>
+
+  <div class="entry"><div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/cgpt">C-GPT</a></h3><span class="role">AI-assisted learning project</span></div><p>I directed an AI-assisted build of a character-level GPT in C++. The assistant implemented tensor operations, the transformer, manual backpropagation, Adam, checkpointing and sampling. The repository documents that contribution split.</p></div>
+
+  <div class="entry">
     <div class="entry-head">
       <h3>Brain-Computer Interface Wheelchair</h3>
       <span class="when">published &nbsp;·&nbsp; CBS</span>
@@ -379,10 +407,10 @@ footer a { color: var(--accent); }
   <div class="entry">
     <div class="entry-head">
       <h3>Thermal-Imaging Friendly-Fire Avoidance System</h3>
-      <span class="when">US20240085134A1</span>
+      <span class="when">US12038245B2</span>
     </div>
     <p style="margin-bottom:0">
-      A patented real-time system that detects human silhouettes in live infrared camera feeds.
+      Co-invented a real-time system that detects human silhouettes in live infrared camera feeds, granted as U.S. Patent 12,038,245 on July 16, 2024.
       The hard part was never detection; it was detection fast enough to matter, since in a
       safety system a correct answer that arrives late is worse than useless. I profiled the
       pipeline end to end and optimized the hot path.
@@ -396,7 +424,7 @@ footer a { color: var(--accent); }
       <span class="when">container ancestry</span>
     </div>
     <p style="margin-bottom:0">
-      Fixed a bug in Podman's container ancestry logic, where a container reported the wrong
+      Submitted <a href="https://github.com/podman-container-tools/podman/pull/27778">a fix</a> for Podman's container ancestry logic, where a container reported the wrong
       ancestor image under certain conditions. It is also where my love of nvim started:
       jumping to the definition of a type and landing exactly where you meant to is a small
       thing that never stopped being satisfying.
@@ -548,7 +576,7 @@ footer a { color: var(--accent); }
     "contact.txt":
       "email  zaidratify123@gmail.com\nwhere  Dallas / Austin, TX",
     "patent.txt":
-      "US20240085134A1 - Thermal-Imaging Friendly-Fire Avoidance System.\n" +
+      "US12038245B2 - Thermal-Imaging Friendly-Fire Avoidance System.\n" +
       "Real-time detection of human silhouettes in live infrared feeds.",
     "stack.txt":
       "languages  Python, C, C++, Go, Java, SQL, Bash\n" +
@@ -584,8 +612,8 @@ footer a { color: var(--accent); }
     print("<span class='c-accent c-b'>Zaid Marwat</span> <span class='c-mute'>- CS @ UT Austin, May 2027</span>");
     print("");
     print("I build and repair the layer other people stand on. Automation at Texas");
-    print("Instruments, test infrastructure at Visa, a container-ancestry fix in Podman,");
-    print("and a patent for a real-time thermal detection system.");
+    print("Instruments, test infrastructure at Visa, a submitted ancestor-filter fix for Podman,");
+    print("and co-invention of a patented real-time thermal detection system.");
     print("");
     print("<span class='c-mute'>Looking for: virtualization, distributed systems, infrastructure.</span>");
     print("");
@@ -605,13 +633,13 @@ footer a { color: var(--accent); }
       ["", "<span class='c-accent c-b'>zaid</span><span class='c-mute'>@</span><span class='c-accent c-b'>utaustin</span>"],
       ["", "<span class='c-mute'>-----------------</span>"],
       ["Host", "The University of Texas at Austin"],
-      ["Kernel", "Computer Science BS, GPA 3.86"],
+      ["Kernel", "Computer Science BS, GPA 3.80"],
       ["Uptime", "graduating May 2027"],
       ["Shell", "bash, zsh"],
       ["Editor", "nvim (btw)"],
       ["Langs", "Python, C, C++, Go, Java, SQL"],
       ["Focus", "virtualization, distributed systems"],
-      ["Patent", "US20240085134A1"],
+      ["Patent", "US12038245B2"],
       ["Playing", "Hikaru Nara"]
     ];
     print("");
@@ -647,9 +675,14 @@ footer a { color: var(--accent); }
 
   def("projects", "things I built", function () {
     print("");
-    [["bci-wheelchair", "real-time EEG to movement. C++/Python on a Pi. Published, CBS."],
-     ["thermal-patent", "US20240085134A1. Silhouette detection in live infrared."],
-     ["podman", "fixed the container ancestry bug. My nvim origin story."],
+    [["cpp-http-server", "poll-based C++17 HTTP server; 146 checks."],
+     ["lsmkv", "C++17 LSM storage, WAL, snapshots and compaction."],
+     ["minfer", "NumPy inference scheduling, paged KV and prefix caching."],
+     ["tracklet", "IMM-EKF radar tracking and global assignment."],
+     ["cgpt", "assistant-built character GPT, directed by me."],
+     ["bci-wheelchair", "real-time EEG to movement. C++/Python on a Pi. Published, CBS."],
+     ["thermal-patent", "US12038245B2. Silhouette detection in live infrared."],
+     ["podman", "submitted ancestor-filter fix, PR #27778 (open)."],
      ["news-app", "team lead. Short-form feed driven by reader-picked topics."]
     ].forEach(function (p) {
       print("<span class='c-key'>" + p[0].padEnd(18) + "</span>" + esc(p[1]));
@@ -681,7 +714,7 @@ footer a { color: var(--accent); }
     print("");
     print("<span class='c-accent c-b'>Podman</span> <span class='c-mute'>- open-source contributor</span>");
     print("");
-    print("Fixed a bug in the container ancestry logic, where a container would report");
+    print("Submitted a fix for container ancestry logic (PR #27778, still open), where a container would report");
     print("the wrong ancestor image when certain conditions were met.");
     print("");
     print("Also where my love of nvim started. Jumping to the definition of a type and");
@@ -742,7 +775,7 @@ footer a { color: var(--accent); }
   def("education", "school", function () {
     print("");
     print("<span class='c-accent c-b'>The University of Texas at Austin</span>");
-    print("Computer Science BS  <span class='c-mute'>|</span>  GPA 3.86  <span class='c-mute'>|</span>  May 2027");
+    print("Computer Science BS  <span class='c-mute'>|</span>  GPA 3.80  <span class='c-mute'>|</span>  May 2027");
     print("");
     print("<span class='c-key'>coursework  </span>Operating Systems, Computer Architecture, Networks,");
     print("            Probability & Statistics, Linear Algebra, HPC,");
@@ -1048,4 +1081,4 @@ footer a { color: var(--accent); }
     hits[idx]();
   });
 })();
-</script>
+    </script>

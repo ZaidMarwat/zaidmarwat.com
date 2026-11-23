@@ -14,8 +14,8 @@ src = (ROOT / "src" / "page.html").read_text(encoding="utf-8")
 
 SITE  = "https://zaidmarwat.com"
 DESC  = ("Zaid Marwat builds and repairs the layer other people stand on: automation at "
-         "Texas Instruments, test infrastructure at Visa, a container-ancestry fix in "
-         "Podman, and a patent for a real-time thermal detection system.")
+         "Texas Instruments, test infrastructure at Visa, a submitted container-ancestry fix for "
+         "Podman, and co-invention of a patent for a real-time thermal detection system.")
 
 # Split the artifact source into head-safe and body parts at the end of <style>.
 cut = src.index("</style>") + len("</style>")

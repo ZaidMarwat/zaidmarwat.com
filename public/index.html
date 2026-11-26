@@ -438,6 +438,36 @@ footer a { color: var(--accent); }
     <p>tracklet is a simulated 2D multi-target radar tracker in Python and NumPy. It combines constant-velocity and coordinated-turn EKFs in an interacting multiple-model filter, gates detections by Mahalanobis distance, and uses a custom Hungarian/JV solver for one-to-one association. M-of-N confirmation and miss-based deletion manage track lifetimes.</p>
   </div>
 
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/arm-dynamics">arm-dynamics</a></h3><span class="role">Robotics, dynamics and control</span></div>
+    <p>Kinematics, dynamics, simulation and control of planar robot arms in NumPy, written from first principles. The Euler-Lagrange dynamics are derived two independent ways (hand-derived 2-link closed form and a general n-link derivation) and cross-checked against an O(n) recursive Newton-Euler implementation, with skew-symmetry and energy invariants enforced as tests. RK4 simulation closes the loop with PD+gravity and computed-torque controllers. 22 tests pass.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/cuda-llm-kernels">cuda-llm-kernels</a></h3><span class="role">GPU and CUDA</span></div>
+    <p>CUDA kernels for LLM decode: shared-memory-tiled SGEMM, warp-per-row online softmax, Welford LayerNorm and split-KV decode attention, each framed against a roofline model. Kernel math is checked on the host against a double-precision reference through an emulated 32-lane shuffle, and the CUDA sources type-check with clang's CUDA front end. They have not been compiled for or run on a GPU yet; the repo says exactly that.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/systolic-gemm-rtl">systolic-gemm-rtl</a></h3><span class="role">Hardware, RTL and verification</span></div>
+    <p>A parameterized int8 matrix-multiply accelerator in Verilog-2005: an N x N output-stationary systolic array with skew buffers and a ready/valid controller, completing a job in K + 2N + 1 cycles, proven against an analytic cycle model. Verified against a bit-exact golden model at three levels: constrained-random stimulus with 17 functional-coverage bins, RTL mutation testing (all 9 injected bugs caught), and cycle-exact tiled checks across N = 1, 3, 4, 8 on Yosys CXXRTL, with a cocotb/Icarus suite in CI.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/httpfuzz">httpfuzz</a></h3><span class="role">Fuzzing and security</span></div>
+    <p>A fuzzer for HTTP/1.1 request parsers, aimed at the framing bugs behind request smuggling. It combines a grammar of smuggling-relevant request shapes, byte-level mutation, SanitizerCoverage feedback and a differential oracle against an RFC 9112 reference model, and it found real framing bugs in my own C++ server. 37 tests pass locally; 8 more run where clang is available.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/factor-backtest">factor-backtest</a></h3><span class="role">Quantitative research</span></div>
+    <p>A 100-year industry momentum backtest in Python: Moskowitz-Grinblatt industry momentum on Ken French's 49 industry portfolios (1926 to 2026), with a point-in-time engine and lookahead canary, trading costs on turnover, Newey-West t-statistics and stationary block-bootstrap Sharpe confidence intervals. 23 tests pass.</p>
+  </div>
+
+  <div class="entry">
+    <div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/email-experiment-analysis">email-experiment-analysis</a></h3><span class="role">Experimentation and statistics</span></div>
+    <p>Analysis of a 64,000-customer randomized email experiment: schema validation, sample-ratio-mismatch and covariate-balance checks, Welch and delta-method intervals, Holm and Benjamini-Hochberg corrections, CUPED/Lin variance reduction and power analysis with A/A calibration. 28 tests pass.</p>
+  </div>
+
   <div class="entry"><div class="entry-head"><h3><a href="https://github.com/ZaidMarwat/cgpt">C-GPT</a></h3><span class="role">AI-assisted learning project</span></div><p>I directed an AI-assisted build of a character-level GPT in C++. The assistant implemented tensor operations, the transformer, manual backpropagation, Adam, checkpointing and sampling. The repository documents that contribution split.</p></div>
 
   <div class="entry">
@@ -735,6 +765,12 @@ footer a { color: var(--accent); }
      ["lsmkv", "C++17 LSM storage, WAL, snapshots and compaction."],
      ["minfer", "NumPy inference scheduling, paged KV and prefix caching."],
      ["tracklet", "IMM-EKF radar tracking and global assignment."],
+     ["arm-dynamics", "n-link dynamics, RK4 sim and model-based control. 22 tests."],
+     ["cuda-llm-kernels", "CUDA decode kernels, host-checked math; not GPU-run yet."],
+     ["systolic-gemm-rtl", "int8 systolic GEMM in Verilog. 9/9 mutation bugs caught."],
+     ["httpfuzz", "HTTP parser fuzzer; real framing bugs in my own server."],
+     ["factor-backtest", "100-year momentum backtest with honest stats. 23 tests."],
+     ["email-exp-analysis", "64k-customer email A/B analysis. 28 tests."],
      ["cgpt", "assistant-built character GPT, directed by me."],
      ["bci-wheelchair", "real-time EEG to movement. C++/Python on a Pi. Published, CBS."],
      ["thermal-patent", "US12038245B2. Silhouette detection in live infrared."],
@@ -821,6 +857,7 @@ footer a { color: var(--accent); }
      ["infra", "Docker, Kubernetes, Ansible, GitLab CI, Jenkins, AWS, Git"],
      ["data", "MySQL, PostgreSQL, MongoDB, pandas, NumPy, SciPy"],
      ["ml", "PyTorch, neural networks, LLM and MCP integration"],
+     ["hardware", "Verilog-2005, functional coverage, mutation testing, Yosys"],
      ["practice", "profiling, debugging, on-call, technical writing"]
     ].forEach(function (s) {
       print("<span class='c-key'>" + s[0].padEnd(12) + "</span>" + esc(s[1]));
@@ -1137,7 +1174,7 @@ footer a { color: var(--accent); }
     hits[idx]();
   });
 })();
-</script>
+    </script>
 
 </body>
 </html>
